@@ -8,12 +8,16 @@
 char inputString[100];
 bool isNFA;
 
-bool NFA(int numStates, int numAlph, char alph[], char states[], int next[numStates][numAlph], char initialState, char FinalState, char transf[numStates][numAlph][numStates], int index)
+void NFA(int numStates, int numAlph, char alph[], char states[], int next[numStates][numAlph], char initialState, char FinalState, char transf[numStates][numAlph][numStates], int index)
 {
-    //printf("Iter %d\n", index);
+   // printf("Iter %d, str= %c, state= %c, isNFA= %d\n", index+1, inputString[index], initialState, isNFA);
     if(inputString[index] == '\0')
     {
-        return isNFA;
+        if(initialState == FinalState)
+        {
+            isNFA= true;
+        }
+        return;
     }
 
     if(initialState== FinalState)
@@ -23,8 +27,8 @@ bool NFA(int numStates, int numAlph, char alph[], char states[], int next[numSta
 
     if(initialState == '#')
     {
-        isNFA= false;
-        return isNFA;
+        //isNFA= false;
+        return;
     }
 
     int i,j;
@@ -38,21 +42,18 @@ bool NFA(int numStates, int numAlph, char alph[], char states[], int next[numSta
         if(inputString[index]== alph[j]) break;
     }
 
-    int k= next[i][j];
+    if(next[i][j]== 0) return;
 
-    while(k--)
+    int k= 0;
+
+    while(k < next[i][j] && isNFA == false)
     {
         char newState = transf[i][j][k];
-        if(newState != initialState)
-        {
-            initialState= newState;
-            NFA(numStates, numAlph, alph, states, next, initialState, FinalState, transf, index);
-        }
+        //if(newState != initialState)
+        initialState= newState;
+        NFA(numStates, numAlph, alph, states, next, initialState, FinalState, transf, index+1);
+        k++;    
     }
-
-    if(initialState != FinalState) return false;
-    
-    NFA(numStates, numAlph, alph, states, next, initialState, FinalState, transf, index+1);
 }
 
 int main()
@@ -115,11 +116,12 @@ int main()
     printf("Enter the input String: ");
     scanf("%s", inputString);
 
-    bool flag= NFA(numstates, numAlph, alph, states, next, initialState, FinalState, transitionFunction, 0);
+    isNFA= false;
+    NFA(numstates, numAlph, alph, states, next, initialState, FinalState, transitionFunction, 0);
 
-    if(flag== true)
+    if(isNFA == true)
     {
-        printf("True\n");
+        printf("\nTrue\n");
     }
-    else printf("False\n");
+    else printf("\nFalse\n");
 }
