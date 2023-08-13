@@ -84,7 +84,7 @@ void NFA(int numStates, int numAlph, char alph[], char states[], int next[numSta
 int main()
 {
     int numAlph, numstates;
-   // freopen("input.txt", "r", stdin);
+    //freopen("input.txt", "r", stdin);
     printf("Enter the number of alphabets: ");
     scanf("%d", &numAlph);
     char alph[numAlph];
@@ -147,7 +147,7 @@ int main()
 
     if(isNFA == true)
     {
-        printf("\nTrue\n");
+        printf("Aceepted\n");
     }
-    else printf("\nFalse\n");
+    else printf("Not Accepted\n");
 }
