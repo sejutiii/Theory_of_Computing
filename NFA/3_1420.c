@@ -6,6 +6,8 @@
 #define n 10
 
 char inputString[100];
+char path[100];
+int path_index;
 bool isNFA;
 
 void NFA(int numStates, int numAlph, char alph[], char states[], int next[numStates][numAlph], char initialState, char FinalState, char transf[numStates][numAlph][numStates], int index)
@@ -16,9 +18,28 @@ void NFA(int numStates, int numAlph, char alph[], char states[], int next[numSta
         if(initialState == FinalState)
         {
             isNFA= true;
+
+            path[path_index]= initialState;
+            path_index++;
+            path[path_index]= '\0';
+
+            printf("\n path= ");
+
+            for(int i=0; path[i] != '\0'; i++)
+            {
+                printf("%c\t", path[i]);
+            }
+
+        }
+        else{
+            path_index--;
         }
         return;
     }
+
+    path[path_index]= initialState;
+    path_index++;
+    path[path_index]= '\0';
 
     // if(initialState== FinalState)
     // {
@@ -42,7 +63,11 @@ void NFA(int numStates, int numAlph, char alph[], char states[], int next[numSta
         if(inputString[index]== alph[j]) break;
     }
 
-    if(next[i][j]== 0) return;
+    if(next[i][j]== 0) 
+    {
+        path_index--;
+        return;
+    }
 
     int k= 0;
 
@@ -59,7 +84,7 @@ void NFA(int numStates, int numAlph, char alph[], char states[], int next[numSta
 int main()
 {
     int numAlph, numstates;
-    freopen("input2.txt", "r", stdin);
+   // freopen("input.txt", "r", stdin);
     printf("Enter the number of alphabets: ");
     scanf("%d", &numAlph);
     char alph[numAlph];
@@ -117,6 +142,7 @@ int main()
     scanf("%s", inputString);
 
     isNFA= false;
+    path_index=0;
     NFA(numstates, numAlph, alph, states, next, initialState, FinalState, transitionFunction, 0);
 
     if(isNFA == true)
