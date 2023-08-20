@@ -6,7 +6,7 @@
 
 void NFA_to_DFA(int numStates, int numAlph, char alph[], char states[], int next[numStates][numAlph], char initialState, char FinalState, char transf[numStates][numAlph][numStates], int index)
 {
-    int numSubstates= pow(numAlph, numStates);
+    
 }
 
 int main()
