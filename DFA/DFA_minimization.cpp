@@ -2,27 +2,9 @@
 
 using namespace std;
 
-void substringGenerator(int i, int k, char*substring, vector<string> &substr)
-{
-    if(i==k)
-    {
-        //substring[i]= '\0';
-        //printf("%s\n", substring);
-        substr.push_back(substring);
-        return;
-    }
-
-    substring[i]= '0';
-    substringGenerator(i+1, k, substring, substr);
-
-    substring[i]= '1';
-    substringGenerator(i+1, k, substring, substr);
-    return;
-}
-
 bool stateCompare(char state1, char state2, int numFinalstate, char* finalstates)
 {
-    int a=3, b=4;
+    int a=3, b=3;
     for(int i=0; i<numFinalstate; i++)
     {
         if(state1==finalstates[i])
@@ -38,10 +20,11 @@ bool stateCompare(char state1, char state2, int numFinalstate, char* finalstates
 
 int main()
 {
-    //freopen("DFA.txt", "r", stdin);
+    freopen("input.txt", "r", stdin);
     int numAlph, numstates;
     cout << "Enter the number of alphabets: ";
     cin >> numAlph;
+    getchar();
 
     char alph[numAlph];
     cout <<"Enter the alphabets: ";
@@ -49,9 +32,11 @@ int main()
     {
         cin >> alph[i];
     }
+    getchar();
 
     cout << "Enter the number of states: ";
     cin >> numstates;
+    getchar();
 
     cout << "Enter the states: ";
     char states[numstates];
@@ -60,6 +45,7 @@ int main()
     {
         cin >> states[i];
     }
+    getchar();
 
     char transitionTable[numstates][numAlph], initialState;
 
@@ -71,40 +57,61 @@ int main()
         {
             cin >> transitionTable[i][j];
         }
+        getchar();
     }
 
     cout << "Enter the initial state: ";
     cin >> initialState;
+    getchar();
 
     int numFinalState;
-    char finalStates[numFinalState];
 
     cout << "Enter the number of final states: ";
     cin >> numFinalState;
+    getchar();
+    char finalStates[numFinalState];
 
     for(int i=0; i<numFinalState; i++)
     {
         cin >> finalStates[i];
     }
+    getchar();
 
-    char minimizationTable[numstates-1][numstates-1];
+    char minimizationTable[numstates][numstates];
 
-    for(int i=0; i<numstates-1; i++)
+    for(int i=0; i<numstates; i++)
     {
-        for(int j=0; j<=i; j++)
+        for(int j=0; j<numstates; j++)
         {
             minimizationTable[i][j]= '=';
         }
     }
 
-    bool isAfinalstate= false;
-    for(int i=0; i<numstates-1; i++)
+    for(int k=0; k<numFinalState; k++)
     {
-        for(int j=0; j<=i; j++)
+        for(int i=0; i<numstates; i++)
+        {
+            if(finalStates[k]== states[i])
+            {
+                for(int j=0; j<numstates; j++)
+                {
+                    if(j<i)
+                        minimizationTable[i][j]= 'x';
+                    else if(j>i)
+                        minimizationTable[j][i]= 'x';
+                }
+            }
+        }
+    }
+
+    bool isAfinalstate= false;
+    for(int i=1; i<numstates; i++)
+    {
+        for(int j=0; j<i; j++)
         {  
            for(int k=0; k<numAlph; k++)
            {
-            char newState1= transitionTable[i+1][k];
+            char newState1= transitionTable[i][k];
             char newState2= transitionTable[j][k];
             bool flag= stateCompare(newState1, newState2, numFinalState, finalStates);
             if(flag== false)
@@ -114,25 +121,18 @@ int main()
             }
            }
 
-            // vector<string> substr;
-            // char substring[3];
-            int len= 2;
-            // substringGenerator(0, len, substring, substr);
+            int len= numAlph;
 
-            //int n= substr.size();
-
-            char substr[4][2]= {
-                {0,0},
-                {0,1},
-                {1,0},
-                {1,1}
+            char substr[4][len]= {
+                {'0','0'},
+                {'0','1'},
+                {'1','0'},
+                {'1','1'}
             };
             for(int k=0; k<4; k++)
             {
-                // string str= substr.back();
-                // substr.pop_back();
                 char newState1, newState2;
-                int stateIndex1= i+1, stateIndex2=j;
+                int stateIndex1= i, stateIndex2=j;
                 for(int l=0; l<len; l++)
                 {
                     int alphIndex;
@@ -146,6 +146,7 @@ int main()
                     {
                         if(newState1== states[m]) stateIndex1=m;
                     }
+
                     newState2= transitionTable[stateIndex2][alphIndex];
                     for(int m=0; m<numstates; m++)
                     {
@@ -163,13 +164,82 @@ int main()
         }
     }
 
-    for(int i=0; i<numstates-1; i++)
+    vector<pair<int, int>> equivalents;
+    for(int i=1; i<numstates; i++)
     {
-        for(int j=0; j<=i; j++)
+        for(int j=0; j<i; j++)
         {
-           printf("%c\t", minimizationTable[i][j]);
+           if(minimizationTable[i][j]== '=')
+           {
+            equivalents.push_back({i, j});
+           }
         }
-        printf("\n");
     }
-    
+
+    int x=  equivalents.size();
+    int newNumStates= numstates-x;
+
+    char newstates[newNumStates], newtransitionTable[newNumStates][numAlph];
+    int index=0;
+    for(int i=0; i<numstates; i++)
+    {
+        bool flag = false;
+        for(int j=0; j<equivalents.size(); j++)
+        {
+            if(i == equivalents[j].first)
+            {
+                flag= true;
+                break;
+            }
+            newstates[index]= states[i];
+        }
+        if(flag== true) continue;
+        index++;
+    }
+
+    cout << "Number of states for the new DFA: " << newNumStates << endl;
+    cout << "The new states are- " << endl;
+
+    for(int i=0; i<newNumStates; i++)
+    {
+        cout << newstates[i] << " ";
+    }
+
+    for(int i=0; i<numstates; i++)
+    {
+        for(int j=0; j<numAlph; j++)
+        {
+            for(int k=0; k<equivalents.size(); k++)
+            {
+                if(transitionTable[i][j]== states[equivalents[k].first])
+                {
+                    transitionTable[i][j]= states[equivalents[k].second];
+                }
+            }
+        }
+    }
+   
+    index=0;
+
+    for(int i=0; i<numstates; i++)
+    {
+        for(int j=0; j<numAlph; j++)
+        {
+            newtransitionTable[index][j]= transitionTable[i][j];
+        }
+        index++;
+    }
+
+    cout << endl;
+    cout << "The transition table for the minimized DFA- " << endl;
+    cout << "  0 1"<< endl;
+    for(int i=0; i<newNumStates; i++)
+    {
+        cout << newstates[i] << " ";
+        for(int j=0; j<numAlph; j++)
+        {
+           cout << newtransitionTable[i][j] << " ";
+        }
+        cout << endl;
+    }
 }
