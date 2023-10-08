@@ -5,41 +5,66 @@ using namespace std;
 //string input= "0^n1^n";
 int n= 10;
 
+int power_0, power_1;
 int inputparsing(string str)
 {
-    int index=5, num;
-    if(str[0]=='0' && str[1]== '^' && str[2]== 'n' && str[3]== '1' && str[4]== '^')
+    int i;
+    if(str[0] != '0' || str[1] != '^' ) return -1;
+    else
     {
-        char a= str[5];
-        if(a == 'n') num=1;
+        i=2;
+        if(str[i]== 'n') power_0= 1;
         else
         {
-            char b[10];
+            char temp[10];
             int ind=0;
-            for(int i=5; i<str.length()-1; i++)
+            while(str[i] != 'n')
             {
-            b[ind++]= str[i];
+                temp[ind++]= str[i++];
             }
-            num= atoi(b);
+            
+            power_0= atoi(temp);
         }
     }
-    else num= -1;
-    cout << num << endl;
-    return num;
+    i++;
+    if(str[i] != '1' || str[++i] != '^') return -1;
+    else
+    {
+        i++;
+        if(str[i]== 'n') power_1= 1;
+        else
+        {
+            char temp[10];
+            int ind=0;
+            while(str[i] != 'n')
+            {
+                temp[ind++]= str[i++];
+            }
+            
+            power_1= atoi(temp);
+        }
+    }
+
+    return power_1;
 }
 int main()
 {
     string input;
     cout << "Enter the input str: ";
     cin >> input;
-    int num= inputparsing(input);
-
+    int co_eff1= inputparsing(input);
+    if(co_eff1== -1) 
+    {
+        cout << "Invalid input format" << endl;
+        exit (1);
+    }
+    int co_eff0= power_0;
     string w,x,y,z;
-    for(int i=0; i<n; i++)
+    for(int i=0; i<co_eff0*n; i++)
     {
         w.append("0");
     }
-    for(int i=n; i<num*n; i++)
+    for(int i=n; i<co_eff1*n; i++)
     {
         w.append("1");
     }
@@ -86,7 +111,8 @@ int main()
         {
             count2++;
         }
-        if(count1 == n && count2== num*n) continue;
+        int new_n= count1/co_eff0;
+        if(co_eff1*new_n == count2) continue;
         else
         {
             flag= false;
