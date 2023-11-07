@@ -34,64 +34,57 @@ void getInput()
     cin >> input;
 }
 
-bool containsVariable(string str)
+int containsVariable(string str)
 {
     for(int i=0; str[i]!= '\0'; i++)
     {
         for(auto var: variables)
         {
-            if(str[i]== var) return true;
+            if(str[i]== var) return i;
         }
     }
-    return false;
+   return -1;
 }
 
-string replaceProduction(char state, string input_val, int index)
+string replaceProduction(char state, char terminal)
 {
-    for(auto prod: production)
+    int i, j; 
+    bool flag= false;
+    for(i=0; i<production.size(); i++)
     {
-        if(state == prod.first)
+        if(state == production[i].first)
         {
-            if(prod.second.size()==1) return prod.second.back();
-            else{
-                char temp= input_val[index];
-                for(auto tempProd: prod.second)
-                {
-                    if(tempProd[0] == temp) return tempProd;
-                }
-                return prod.second.back();
-            }
-        }
-    }
-    return "Invalid";
-}
-
-void leftmost_derivation(string inp)
-{
-    string temp= output.back();
-    for(int i=0; i< temp.size(); i++)
-    {
-        string replace;
-        for(auto var: variables)
-        {
-            if(var == temp[i]) 
+            for(j=0; j<production[i].second.size(); j++)
             {
-                replace= replaceProduction(var, inp, i);
-                if(replace== "Invalid") return;
-                break;
+                if(production[i].second[j][0]== terminal) 
+                {
+                    flag= true;
+                    break;
+                }
             }
         }
-        temp= temp.substr(0, i) + replace+ temp.substr(i+1);
-        output.push_back(temp);
+        if(flag) break;
     }
-    if(containsVariable(temp)) leftmost_derivation(input);
+    if(i== production.size()) return production[i].second[j-1];
+    return production[i].second[j];
+}
+
+void leftmost_derivation(string temp, int index)
+{
+    output.push_back(temp);
+    string replace= replaceProduction(temp[index], input[index]);
+    temp= temp.substr(0, index) + replace+ temp.substr(index+1);
+    index= containsVariable(temp);
+    if(index== -1) return;
+    leftmost_derivation(temp, index);
 }
 
 void printOutput_left()
 {
-    for(auto val: output)
+    cout << output[0];
+    for(int i=1; i<output.size(); i++)
     {
-        cout << val << " -> ";
+        cout <<" -> " << output[i];
     }
     cout<<endl;
 }
@@ -99,6 +92,7 @@ void printOutput_left()
 int main()
 {
     getInput();
-    leftmost_derivation(input);
+    string temp= "S"; 
+    leftmost_derivation(temp, 0);
     printOutput_left();
 }
