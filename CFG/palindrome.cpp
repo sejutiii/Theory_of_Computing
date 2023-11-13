@@ -1,104 +1,98 @@
 #include<bits/stdc++.h>
-
 using namespace std;
 
-vector<char> variables= {'S', 'A', 'B'};
-int numVariable= 3;
-vector<char> terminal= {'0', '1'};
-vector<pair<char, vector<string>>> production;
-
-bool isVariable(char c)
-{
-    for(int i=0; i<numVariable; i++)
-    {
-        if(c == variables[i]) return true;
-    }
-    return false;
-}
+vector<string> production;
+vector<string> output;
+string input;
 
 int main()
 {
-    pair<char, vector<string>> node;
-    node.first= 'S';
-    node.second.push_back("A1B");
-    production.push_back(node);
-
-    node.first= 'A';
-    node.second.push_back("0A");
-    node.second.push_back("");
-    production.push_back(node);
-
-    node.first= 'B';
-    node.second.push_back("0B");
-    node.second.push_back("1B");
-    node.second.push_back("");
-
-    char state= 'S';
-
-    string input;
-    vector<string> output;
-    output.push_back("S");
-
+    production= {"", "0", "1", "0p0", "1p1"};
     cout << "Enter the input string: ";
     cin >> input;
+    int len = input.length();
 
-    for(int i=0; i<input.size(); i++)
+    for(int i=0; i<len; i++)
+    {
+        if(input[i]== '0' || input[i]== '1')
+            continue;
+        else 
+        {
+            cout << "Invalid input" << endl;
+            exit(1);
+        }
+    }
+    
+    output.push_back("p");
+
+    int temp_len= len;
+    string temp_str= input;
+
+    for(int i=0; i<=len/2; i++)
     {
         string temp= output.back();
-        
-        for(int j=0; j<temp.size(); j++)
+        int index= temp.length()/2;
+
+        string pre= temp.substr(0, index);
+        string post= temp.substr(index+1);
+
+        if(temp_len== 0)
         {
-            if(temp[j] == terminal[0] || temp[j]== terminal[1]) continue;
-
-            else{
-                
-                string pre= temp.substr(0, j);
-                string post= temp.substr(j+1);
-
-                for(int k=0; k<numVariable; k++)
-                {
-                    if(temp[j] == production[k].first)
-                    {
-                        for(int l=0; l<production[k].second.size(); l++)
-                        {
-                            
-                            if(input[i] == production[k].second[l][0])
-                            {
-                                cout << production[k].second[l] << endl;
-                                temp= pre;
-                                temp += production[k].second[l];
-                                temp += post;
-                                break;
-                            }
-
-                            else if(production[k].second.size()==1)
-                            {
-                                cout << "hello " << production[k].second[l]<<endl;
-                                temp= pre;
-                                temp += production[k].second[l];
-                                temp += post;
-                                break;
-                            }
-                            // else{
-                            //     temp= pre;
-                            //     temp += post;
-                            //     break;
-                            // }
-                        }
-                        break;
-                    }
-                }
-                break;
+            temp= pre;
+            temp += post;
+           // break;
+        }
+        else if(temp_len == 1)
+        {
+            if(temp_str== production[1])
+            {
+                temp = pre;
+                temp += production[1];
+                temp += post;
             }
+
+            else if(temp_str== production[2])
+            {
+                temp = pre;
+                temp += production[2];
+                temp += post;
+            }
+           // break;
+        }
+
+        else
+        {
+            if(input[i]== '0')
+            {
+                temp= pre;
+                temp += production[3];
+                temp += post;
+            }
+
+            else if(input[i]== '1')
+            {
+                temp= pre;
+                temp += production[4];
+                temp += post;
+            }
+
+            temp_len -= 2;
+            temp_str= input.substr(i+1, temp_len);
         }
 
         output.push_back(temp);
+        //cout << temp_len << endl;
     }
 
-    cout << "leftmost -> ";
-    for(int i=0; i<output.size()-1; i++)
+    if(output.back()== input)
     {
-        cout << output[i] << " -> ";
+        int i;
+        for(i=0; i<output.size()-1; i++)
+        {
+            cout << output[i] << "-> ";
+        }
+        cout << output[i]<< endl;
     }
-    cout << output.back() << endl;
+    else cout << "Not in this grammar"<< endl;
+    
 }

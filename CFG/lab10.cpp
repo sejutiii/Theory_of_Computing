@@ -14,28 +14,6 @@ vector<string> output;
 
 void getInput()
 {
-    // pair<char, vector<string>> node;
-    // node.first= 'S';
-    // node.second.push_back("A1B");
-    // production.push_back(node);
-    // node.second.clear();
-
-    // node.first= 'A';
-    // node.second.push_back("0A");
-    // node.second.push_back("");
-    // production.push_back(node);
-    // node.second.clear();
-
-    // node.first= 'B';
-    // node.second.push_back("0B");
-    // node.second.push_back("1B");
-    // node.second.push_back("");
-    // production.push_back(node);
-    // node.second.clear();
-    //char state= 'S';
-
-    //output.push_back("S");
-
     cout << "Enter the input string: ";
     cin >> input;
 }
@@ -82,6 +60,7 @@ void leftmost_derivation(string temp, int index)
     leftmost_derivation(temp, index);
 }
 
+// rightmost starts here >
 int indexOf1()
 {
     int i;
