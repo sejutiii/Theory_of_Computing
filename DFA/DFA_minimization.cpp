@@ -20,7 +20,7 @@ bool stateCompare(char state1, char state2, int numFinalstate, char* finalstates
 
 int main()
 {
-    freopen("input.txt", "r", stdin);
+    //freopen("input.txt", "r", stdin);
     int numAlph, numstates;
     cout << "Enter the number of alphabets: ";
     cin >> numAlph;
